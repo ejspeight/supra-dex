@@ -1,0 +1,24 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# Move build artifacts
+**/build/
+**/output/
+*.mv
+*.mvir
+
+# Node (Next.js frontend)
+/node_modules/
+/.next/
+/dist/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Git
+*.log
+

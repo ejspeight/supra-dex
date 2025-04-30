@@ -1,44 +1,23 @@
-use reqwest::Client;
-use serde_json::{json, Value};
+use axum::{Router, serve};
+use std::net::SocketAddr;
+use tokio::net::TcpListener;
+use tracing_subscriber;
+
+mod routes;
+mod supra_client;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = Client::new();
+async fn main() {
+    tracing_subscriber::fmt::init();
 
-    // add smart contract/module function to payload
-    let payload = json!({
-        "function": "0x1::timestamp::now_microseconds",
-        "type_arguments": [],
-        "arguments": [] 
-    });
+    let app = Router::new().nest("/api", routes::oracle_routes());
 
-    let response = client
-        .post("https://rpc-testnet.supra.com/rpc/v1/view")
-        .json(&payload)
-        .send()
-        .await?;
+    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let listener = TcpListener::bind(addr).await.unwrap();
 
-    if !response.status().is_success() {
-        eprintln!("Error: receieved non 200 status: {}", response.status());
-        return Ok(());
-    }
+    println!("Server listening on http://{}", addr);
 
-
-   println!("Status: {}", response.status());
-   println!("Headers:\n{:#?}", response.headers());
-   
-
-    let raw = response.text().await?;
-    print!("Raw body:\n{}", raw);
-
-    let json: Value = serde_json::from_str(&raw)?;
-
-    if let Some(result) = json["result"].get(0) {
-        println!("Parsed result: {}", result);
-    } else {
-        println!("No result returned from function.");
-    }
-
-    Ok(())
+    serve(listener, app.into_make_service())
+        .await
+        .unwrap();
 }
-
