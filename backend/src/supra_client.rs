@@ -29,3 +29,27 @@ pub async fn fetch_prices() -> Result<Value, Box<dyn std::error::Error>> {
     Ok(result)
 }
 
+pub async fn get_pools() -> Result<Value, Box<dyn std::error::Error>> {
+    // Replace with move smart contract liquid pools function
+    let mock_pools = json!([
+        {
+            "pair": "BTC/SUPRA",
+            "reserve_btc": 1.25,
+            "reserve_supra": 87000.0,
+            "tvl_usd": 120000.0,
+            "fee": 0.3,
+            "apy": 12.7
+        },
+        {
+            "pair": "ETH/SUPRA",
+            "reserve_eth": 5.0,
+            "reserve_supra": 59000.0,
+            "tvl_usd": 95000.0,
+            "fee": 0.25,
+            "apy": 10.2
+        }
+    ]);
+
+    Ok(mock_pools)
+}
+
